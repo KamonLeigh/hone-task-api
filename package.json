@@ -1,0 +1,31 @@
+{
+  "name": "hono-task-api",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "Bun --env-file=.env.development.local run index.ts --watch",
+    "migrate:initial": "bunx --bun drizzle-kit generate --dialect sqlite --schema ./db/schema.ts",
+    "migrate": "bun run ./db/migrate.ts",
+    "generate": "bunx --nun  drizzle-kit generate",
+    "push": "—bun drizzle-kit push:sqlite",
+    "studio": "bunx --bun drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.13",
+    "@types/jsonwebtoken": "^9.0.7",
+    "drizzle-kit": "^0.28.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^0.16.4",
+    "@hono/zod-validator": "^0.4.1",
+    "drizzle-orm": "^0.36.0",
+    "drizzle-zod": "^0.5.1",
+    "hono": "^4.6.9",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.0.2",
+    "zod": "^3.23.8"
+  }
+}
