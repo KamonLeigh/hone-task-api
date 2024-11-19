@@ -20,7 +20,6 @@ export function generateToken(data: Data): string {
 
 export function verifyJWTfn(token: string) {
   const isRevoked = isTokenRevoked(token);
-  console.log(isRevoked);
   if (isRevoked) return true;
   const data = jwt.verify(token, config.JWT_SECRET);
 

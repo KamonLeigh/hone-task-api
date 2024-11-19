@@ -106,3 +106,13 @@ export function logout(c) {
   revokeToken(token);
   return c.json({}, 204);
 }
+
+export function refreshTokenHandler(c) {
+  const user = c.get("user");
+
+  const token = generateToken(user);
+
+  return c.json({
+    token,
+  });
+}
