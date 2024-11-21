@@ -10,6 +10,8 @@ import {
   updateProjectHandeler,
 } from "./handler";
 
+import type { NewProjectResponse } from "./handler";
+
 const projectRoutes = new Hono();
 
 const paramsId = z.object({

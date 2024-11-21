@@ -77,6 +77,7 @@ export const insertProjectsSchema = createInsertSchema(projects, {
 }).omit({
   id: true,
   slug: true,
+  ownerId: true,
 });
 
 export type CreateProjectBody = z.infer<typeof insertProjectsSchema>;

@@ -3,6 +3,7 @@ import { db } from "@db/db";
 import { selectProjectsSchema, projects } from "@db/schema";
 import type { CreateProjectBody } from "@db/schema";
 import type { Context } from "hono";
+import type { ZodPromise } from "zod";
 
 interface CustomContext extends Context {
   get(key: "user"): { id: string };
@@ -11,18 +12,25 @@ interface CustomContext extends Context {
   };
 }
 
+export interface NewProjectResponse {
+  id: string;
+}
+
 export async function createProjectHandler(c: CustomContext) {
   const { id: ownerId } = c.get("user");
   const { name } = c.req.valid("json");
 
-  const project = await db.insert(projects).values({ ownerId, name });
+  const project = await db
+    .insert(projects)
+    .values({ ownerId, name })
+    .returning({
+      id: projects.slug,
+    });
 
-  return c.json(
-    {
-      project,
-    },
-    201,
-  );
+  const res: NewProjectResponse = {
+    id: project[0].id,
+  };
+  return c.json(res, 201);
 }
 
 export async function projectHandeler(c: Context) {
