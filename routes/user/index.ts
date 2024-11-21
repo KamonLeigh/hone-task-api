@@ -5,10 +5,6 @@ import { signUp, signIn, me, logout, refreshTokenHandler } from "./handler";
 import authenticate from "../../middleware/auth";
 const userRoutes = new Hono();
 
-userRoutes.get("/", (c) => {
-  return c.text("This is the user route");
-});
-
 userRoutes
   .post("/signup", zValidator("json", insertUsersSchema), signUp)
   .post("/signin", zValidator("json", insertUsersSchema), signIn)

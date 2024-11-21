@@ -79,6 +79,8 @@ export const insertProjectsSchema = createInsertSchema(projects, {
   slug: true,
 });
 
+export type CreateProjectBody = z.infer<typeof insertProjectsSchema>;
+
 export const tasks = table(
   "tasks",
   {
