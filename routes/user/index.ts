@@ -6,8 +6,16 @@ import authenticate from "../../middleware/auth";
 const userRoutes = new Hono();
 
 userRoutes
-  .post("/signup", zValidator("json", insertUsersSchema), signUp)
-  .post("/signin", zValidator("json", insertUsersSchema), signIn)
+  .post(
+    "/signup",
+    zValidator("json", insertUsersSchema),
+    signUp as unknown as any,
+  )
+  .post(
+    "/signin",
+    zValidator("json", insertUsersSchema),
+    signIn as unknown as any,
+  )
   .get("/me", authenticate, me)
   .post("/logout", authenticate, logout)
   .post("/refreshToken", authenticate, refreshTokenHandler);

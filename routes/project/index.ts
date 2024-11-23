@@ -5,6 +5,7 @@ import autheticate from "../../middleware/auth";
 import { insertProjectsSchema } from "@db/schema";
 import {
   createProjectHandler,
+  deleteProjectHandeler,
   projectHandeler,
   projectListHandler,
   updateProjectHandeler,
@@ -32,5 +33,11 @@ projectRoutes
     autheticate,
     zValidator("json", insertProjectsSchema),
     updateProjectHandeler as unknown as any,
+  )
+  .delete(
+    "/:id",
+    autheticate,
+    zValidator("query", paramsId),
+    deleteProjectHandeler,
   );
 export default projectRoutes;

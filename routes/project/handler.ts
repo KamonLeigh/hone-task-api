@@ -95,3 +95,18 @@ export async function updateProjectHandeler(c: CustomContext) {
     return c.json({ error: "Failed to update project" }, 500);
   }
 }
+
+export async function deleteProjectHandeler(c: Context) {
+  const { id: ownerId } = c.get("user");
+  const { id: slug } = c.req.param();
+
+  const project = await db
+    .delete(projects)
+    .where(and(eq(projects.ownerId, ownerId), eq(projects.slug, slug)))
+    .returning({ id: projects.slug });
+
+  const res: NewProjectResponse = {
+    id: project[0].id,
+  };
+  return c.json(res, 200);
+}

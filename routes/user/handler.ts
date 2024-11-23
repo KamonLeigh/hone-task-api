@@ -2,13 +2,21 @@ import { db } from "@db/db";
 import { users, selectUsersSchema } from "@db/schema";
 import { generateHash } from "@util";
 import { generateToken, revokeToken } from "@auth";
+import type { Context } from "hono";
 import { CustomError } from "@util";
 
 import type { User } from "@db/schema";
 
 export type Token = Pick<User, "id" | "name">;
 
-export async function signUp(c) {
+interface CustomContext extends Context {
+  get(key: "user"): { id: string };
+  req: Context["req"] & {
+    valid<T>(target: "json"): { name: string; password: string };
+  };
+}
+
+export async function signUp(c: CustomContext) {
   const { name, password } = c.req.valid("json");
 
   const user = await db.query.users.findFirst({
@@ -38,7 +46,7 @@ export async function signUp(c) {
   );
 }
 
-export async function signIn(c) {
+export async function signIn(c: CustomContext) {
   const { name, password } = c.req.valid("json");
 
   const user = await db.query.users.findFirst({
@@ -71,7 +79,7 @@ export async function signIn(c) {
   });
 }
 
-export async function me(c) {
+export async function me(c: Context) {
   const userData = c.get("user");
 
   const user = await db.query.users.findFirst({
@@ -99,15 +107,15 @@ export async function me(c) {
   );
 }
 
-export function logout(c) {
-  const authHeader = c.req.header("Authorization");
+export function logout(c: Context) {
+  const authHeader = c.req.header("Authorization") as string;
   const token = authHeader.split(" ")[1];
 
   revokeToken(token);
   return c.json({}, 204);
 }
 
-export function refreshTokenHandler(c) {
+export function refreshTokenHandler(c: Context) {
   const user = c.get("user");
 
   const token = generateToken(user);

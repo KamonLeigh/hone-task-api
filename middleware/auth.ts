@@ -1,6 +1,7 @@
 import { verifyJWTfn, isTokenRevoked } from "@auth";
+import type { Context } from "hono";
 
-export default async function (c, next) {
+export default async function (c: Context, next: any) {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

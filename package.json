@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "Bun --env-file=.env.development.local run index.ts --watch",
+    "dev": "Bun --env-file=.env.development.local run --watch index.ts",
     "migrate:initial": "bunx --bun drizzle-kit generate --dialect sqlite --schema ./db/schema.ts",
     "migrate": "bun run ./db/migrate.ts",
     "generate": "bunx --nun  drizzle-kit generate",
