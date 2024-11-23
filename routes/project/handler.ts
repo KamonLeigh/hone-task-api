@@ -14,6 +14,7 @@ interface CustomContext extends Context {
 
 export interface NewProjectResponse {
   id: string;
+  message?: string;
 }
 
 export async function createProjectHandler(c: CustomContext) {
@@ -50,7 +51,7 @@ export async function projectHandeler(c: Context) {
     {
       data: selectProjectsSchema.parse(project),
     },
-    201,
+    200,
   );
 }
 export async function projectListHandler(c: Context) {
@@ -64,15 +65,18 @@ export async function projectListHandler(c: Context) {
   if (!projectList) {
     return c.json(
       {
-        error: "Project(s) not foudn",
+        error: "Project(s) not found",
       },
       404,
     );
   }
 
-  return c.json({
-    data: projectList.map((project) => selectProjectsSchema.parse(project)),
-  });
+  return c.json(
+    {
+      data: projectList.map((project) => selectProjectsSchema.parse(project)),
+    },
+    200,
+  );
 }
 
 export async function updateProjectHandeler(c: CustomContext) {
@@ -90,7 +94,7 @@ export async function updateProjectHandeler(c: CustomContext) {
       return c.json({ error: "Failed to update project" }, 404);
     }
 
-    return c.json({ message: "Project updated successfully" });
+    return c.json({ message: "Project updated successfully" }, 200);
   } catch (error) {
     return c.json({ error: "Failed to update project" }, 500);
   }
@@ -107,6 +111,7 @@ export async function deleteProjectHandeler(c: Context) {
 
   const res: NewProjectResponse = {
     id: project[0].id,
+    message: "project removed",
   };
   return c.json(res, 200);
 }

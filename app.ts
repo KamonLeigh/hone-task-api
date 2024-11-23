@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import userRoutes from "@routes/user";
 import projectRoutes from "@routes/project";
+import taskRoutes from "@routes/task";
 
 const app = new Hono();
 app.use(logger());
@@ -19,6 +20,7 @@ if (config.isDevelopment) {
 }
 app.route("/user", userRoutes);
 app.route("/project", projectRoutes);
+app.route("/task", taskRoutes);
 app.notFound(onNotFound);
 
 app.onError(onError);

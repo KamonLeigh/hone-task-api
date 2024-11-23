@@ -121,6 +121,8 @@ export const insertTasksSchema = createInsertSchema(tasks, {
   updatedAt: true,
 });
 
+export type CreateTaskBody = z.infer<typeof insertTasksSchema>;
+
 export const comments = table(
   "comments",
   {

@@ -15,7 +15,7 @@ import type { NewProjectResponse } from "./handler";
 
 const projectRoutes = new Hono();
 
-const paramsId = z.object({
+export const paramsId = z.object({
   id: z.string(),
 });
 
@@ -26,7 +26,7 @@ projectRoutes
     zValidator("json", insertProjectsSchema),
     createProjectHandler as unknown as any,
   )
-  .get("/:id", autheticate, zValidator("query", paramsId), projectHandeler)
+  .get("/:id", autheticate, zValidator("param", paramsId), projectHandeler)
   .get("/", autheticate, projectListHandler)
   .put(
     "/:id",
