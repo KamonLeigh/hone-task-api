@@ -162,6 +162,7 @@ export const insertCommentsSchema = createInsertSchema(comments, {
   updatedAt: true,
 });
 
+export type CreateCommentBody = z.infer<typeof insertCommentsSchema>;
 // Relations
 
 export const usersRelations = relations(users, ({ many }) => ({

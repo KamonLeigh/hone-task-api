@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "@hono/zod-openapi";
-import autheticate from "../../middleware/auth";
+import autheticate from "@middleware/auth";
 import { insertProjectsSchema } from "@db/schema";
 import {
   createProjectHandler,
