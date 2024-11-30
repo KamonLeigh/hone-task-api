@@ -95,7 +95,9 @@ export const tasks = table(
       .references(() => users.id),
     projectId: text("project_id")
       .notNull()
-      .references(() => projects.slug),
+      .references(() => projects.slug, {
+        onDelete: "cascade",
+      }),
     createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
       () => new Date(),
     ),
@@ -136,7 +138,9 @@ export const comments = table(
       .references(() => users.id),
     taskId: text()
       .notNull()
-      .references(() => tasks.slug),
+      .references(() => tasks.slug, {
+        onDelete: "cascade",
+      }),
     createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
       () => new Date(),
     ),
