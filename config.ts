@@ -11,6 +11,7 @@ const envSchema = z.object({
     .min(10, { message: "Must be more than 10 characters" }),
   JWT_EXPIRE_IN: z.string(),
   PASSWORD_SALT: z.string(),
+  DATABASE: z.string(),
 });
 
 // export const config = createEnvSchema({
