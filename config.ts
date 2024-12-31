@@ -27,8 +27,15 @@ const envSchema = z.object({
 //     PORT: z.string().transform(Number).default('3000'),
 //   })
 // })
+//
+//
 
-const config = envSchema.parse(Bun.env);
+const getEnv = () => {
+  const env = typeof Bun !== "undefined" ? Bun.env : process.env;
+  return envSchema.parse(env);
+};
+
+const config = envSchema.parse(getEnv());
 
 export type Config = z.infer<typeof envSchema>;
 

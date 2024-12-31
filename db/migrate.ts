@@ -7,3 +7,8 @@ import config from "@config";
 const sqlite = new Database(config.DATABASE);
 const db = drizzle(sqlite);
 await migrate(db, { migrationsFolder: "./drizzle" });
+
+export async function applyMigration(): Promise<void> {
+  console.log("running");
+  await migrate(db, { migrationsFolder: "./drizzle" });
+}
