@@ -1,5 +1,7 @@
 import config from "@config";
 import app from "@app";
+import { db } from "@db/db";
+import { users, comments, tasks, projects } from "@db/schema";
 
 export const createTestRequest = (
   path: string,
@@ -34,4 +36,11 @@ export const generateTokenUser = async (body: {
   const data = await res.json();
 
   return data;
+};
+
+export const clearDatabaseData = async () => {
+  await db.delete(comments);
+  await db.delete(tasks);
+  await db.delete(projects);
+  await db.delete(users);
 };

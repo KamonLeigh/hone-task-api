@@ -2,7 +2,11 @@ import { beforeAll, afterAll } from "bun:test";
 import { users, comments, tasks, projects } from "@db/schema";
 import { eq } from "drizzle-orm";
 import app from "@app";
-import { createTestRequest, generateTokenUser } from "./util-test";
+import {
+  createTestRequest,
+  generateTokenUser,
+  clearDatabaseData,
+} from "./util-test";
 import { generateHash } from "@util";
 import {
   projectsList,
@@ -34,6 +38,7 @@ checkCode();
 beforeAll(async () => {
   try {
     console.log("\x1b[38;5;214m%s\x1b[0m", "Setting up test environment");
+    await clearDatabaseData();
     const { salt, hash } = await generateHash(PASSWORD);
     await db.insert(users).values({ name: "leigh", salt, hash });
 
@@ -96,11 +101,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await db.delete(comments);
-    await db.delete(tasks);
-    await db.delete(projects);
-    await db.delete(users);
-
+    await clearDatabaseData();
     console.log("\x1b[38;5;214m%s\x1b[0m", "Cleaning up test environment");
   } catch (error) {
     console.error("Cleanup error:", error);
