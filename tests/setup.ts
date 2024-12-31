@@ -4,10 +4,14 @@ import { eq } from "drizzle-orm";
 import app from "@app";
 import { createTestRequest, generateTokenUser } from "./util-test";
 import { generateHash } from "@util";
-import { projectsList, taskListUserOne, commentsListUserOne } from "./data";
+import {
+  projectsList,
+  taskListUserOne,
+  commentsListUserOne,
+  PASSWORD,
+} from "./data";
 import { db } from "@db/db";
 
-const PASSWORD = "password1234";
 const checkCode = async () => {
   console.log("\x1b[38;5;214m%s\x1b[0m", "Checking code in test file...");
   try {
