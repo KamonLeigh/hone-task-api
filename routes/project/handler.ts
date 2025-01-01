@@ -43,13 +43,13 @@ export async function projectHandeler(c: Context) {
     .from(projects)
     .where(and(eq(projects.slug, slug), eq(projects.ownerId, ownerId)));
 
-  if (!project) {
-    return c.json({ error: "Project not found" }, 404);
+  if (!project.length) {
+    return c.json({ error: "Project not found" }, 200);
   }
 
   return c.json(
     {
-      data: selectProjectsSchema.parse(project),
+      data: selectProjectsSchema.parse(project[0]),
     },
     200,
   );
