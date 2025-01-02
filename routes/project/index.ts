@@ -37,7 +37,7 @@ projectRoutes
   .delete(
     "/:id",
     authenticate,
-    zValidator("query", paramsId),
+    zValidator("param", paramsId),
     deleteProjectHandeler,
   );
 export default projectRoutes;
