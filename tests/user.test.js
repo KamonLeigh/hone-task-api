@@ -4,7 +4,7 @@ import { expect, test, describe } from "bun:test";
 import { verifyJWTfn } from "@auth";
 import { createTestRequest, generateTokenUser } from "./util-test";
 
-describe("create user", () => {
+describe("Create user", () => {
   const userData = {
     name: "ryan",
     password: "password1234",

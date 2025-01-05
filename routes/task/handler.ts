@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import type { Context } from "hono";
 import { db } from "@db/db";
-import { selectTasksSchema, tasks } from "@db/schema";
+import { selectTasksSchema, tasks, projects } from "@db/schema";
 import type { CreateTaskBody } from "@db/schema";
 
 interface CustomContext extends Context {
@@ -46,6 +46,15 @@ export async function createTaskHandler(c: CustomContext) {
   const { id: projectId } = c.req.param();
   const { id: ownerId } = c.get("user");
   const { name } = c.req.valid("json");
+
+  const project = await db
+    .select()
+    .from(projects)
+    .where(and(eq(projects.slug, projectId), eq(projects.ownerId, ownerId)));
+
+  if (!project.length) {
+    return c.json({ error: "Invalid id: Project not found" }, 404);
+  }
 
   const task = await db
     .insert(tasks)

@@ -22,8 +22,8 @@ taskRoutes
   .post(
     "/:id",
     authenticate,
-    zValidator("json", insertTasksSchema),
     zValidator("param", paramsId),
+    zValidator("json", insertTasksSchema),
     createTaskHandler as unknown as any,
   )
   .put(

@@ -121,6 +121,8 @@ export const insertTasksSchema = createInsertSchema(tasks, {
   slug: true,
   createdAt: true,
   updatedAt: true,
+  ownerId: true,
+  projectId: true,
 });
 
 export type CreateTaskBody = z.infer<typeof insertTasksSchema>;

@@ -25,7 +25,7 @@ const userTwoHeaders = {
   Authorization: `Bearer ${userTwoTokenPayload.token}`,
 };
 
-describe("retrive data from users projects", () => {
+describe("Retrive data from user's projects", () => {
   let projects;
 
   test("Should list all the projects", async () => {
