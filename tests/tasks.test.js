@@ -27,7 +27,9 @@ const userTwoHeaders = {
 describe("Retrive tasks from user's project", async () => {
   let tasks;
   let id;
+  let taskId;
   const task = "new task";
+  const updatedTask = "updated task";
 
   test("Should list all tasks associated with a project", async () => {
     const reqPro = createTestRequest("/project", {
@@ -84,6 +86,7 @@ describe("Retrive tasks from user's project", async () => {
 
     const res = await app.fetch(req);
     const result = await res.json();
+    taskId = result.id;
 
     expect(result.id).toBeDefined();
     expect(typeof result.id).toBe("string");
@@ -106,5 +109,100 @@ describe("Retrive tasks from user's project", async () => {
     const result = await res.json();
     expect(res.status).toBe(404);
     expect(result.error).toBeDefined();
+  });
+
+  test("Should not update task if no credentials are provided", async () => {
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(401);
+    const result = await res.json();
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
+  });
+
+  test("Should not update task if wrong credentials are provided", async () => {
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+      headers: userTwoHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+    const result = await res.json();
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+  });
+
+  test("Should not update task if erroneous url is provided both params", async () => {
+    const req = createTestRequest(`/task/bbbbb/aaaaaaaaa}`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+    const result = await res.json();
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+  });
+
+  test("Should not update task if erroneous url is provided one param: id", async () => {
+    const req = createTestRequest(`/task/${id}/aaaaaaaaassss`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+    const result = await res.json();
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+  });
+
+  test("Should not update task if erroneous url is provided one param: id", async () => {
+    const req = createTestRequest(`/task/aaaaaaaaaaaa/${taskId}`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+    const result = await res.json();
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+  });
+
+  test("Should not update task if wrong credentials are provided", async () => {
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "PUT",
+      body: {
+        name: updatedTask,
+      },
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(200);
+    const result = await res.json();
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 });
