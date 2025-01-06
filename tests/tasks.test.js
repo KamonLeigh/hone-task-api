@@ -24,14 +24,14 @@ const userTwoHeaders = {
   Authorization: `Bearer ${userTwoTokenPayload.token}`,
 };
 
-describe("Retrive tasks from user's project", async () => {
+describe("Tests should retrive tasks from user's project create and update", async () => {
   let tasks;
   let id;
   let taskId;
   const task = "new task";
   const updatedTask = "updated task";
 
-  test("Should list all tasks associated with a project", async () => {
+  test("Should list all tasks associated with a project and update a task", async () => {
     const reqPro = createTestRequest("/project", {
       method: "GET",
       headers: userOneHeaders,
@@ -54,15 +54,15 @@ describe("Retrive tasks from user's project", async () => {
     });
 
     expect(result).toEqual(taskListUserOne[1]);
-  });
 
-  test("Should not list tasks without credentials", async () => {
-    const req = createTestRequest(`/task/${id}`, {
-      method: "GET",
+    test("Should not list tasks without credentials", async () => {
+      const req = createTestRequest(`/task/${id}`, {
+        method: "GET",
+      });
+
+      const res = await app.fetch(req);
+      expect(res.status).toBe(401);
     });
-
-    const res = await app.fetch(req);
-    expect(res.status).toBe(401);
   });
 
   test("Should not be able to insert task with no user data", async () => {
@@ -204,5 +204,67 @@ describe("Retrive tasks from user's project", async () => {
     const result = await res.json();
     expect(result.message).toBeDefined();
     expect(typeof result.message).toBe("string");
+  });
+});
+
+describe("Tests handling deleting tasks", () => {
+  let id;
+  const task = "delete task";
+  let taskId;
+
+  test("Should not be able to delete task with no credentials", async () => {
+    const reqPro = createTestRequest("/project", {
+      method: "GET",
+      headers: userOneHeaders,
+    });
+
+    const resPro = await app.fetch(reqPro);
+    const projects = await resPro.json();
+    id = projects.data[0].slug;
+
+    const addReq = createTestRequest(`/task/${id}`, {
+      method: "POST",
+      body: {
+        name: task,
+      },
+      headers: userOneHeaders,
+    });
+
+    const addRes = await app.fetch(addReq);
+    const addResult = await addRes.json();
+    taskId = addResult.id;
+
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "DELETE",
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(401);
+    const result = await res.json();
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
+  });
+
+  test("Should not be able to delete task with wrong credentials", async () => {
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "DELETE",
+      headers: userTwoHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+    const result = await res.json();
+    expect(result.error).toBeDefined();
+    expect(typeof result.error).toBe("string");
+  });
+
+  test("Should be able to delete task with the correct credentials", async () => {
+    const req = createTestRequest(`/task/${id}/${taskId}`, {
+      method: "DELETE",
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(200);
   });
 });

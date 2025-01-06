@@ -112,6 +112,15 @@ export async function deleteTaskHandler(c: Context) {
   const { id: ownerId } = c.get("user");
   const { taskId: slug } = c.req.param();
 
+  const initialTask = await db
+    .select({ ownerId: tasks.ownerId })
+    .from(tasks)
+    .where(and(eq(tasks.slug, slug), eq(tasks.ownerId, ownerId)));
+
+  if (!initialTask.length) {
+    return c.json({ error: "Failed to update task: incorrect details" }, 404);
+  }
+
   const task = await db
     .delete(tasks)
     .where(and(eq(tasks.ownerId, ownerId), eq(tasks.slug, slug)))
