@@ -170,7 +170,7 @@ describe("Tests create and update project", async () => {
   });
 });
 
-describe("Create and delete project", () => {
+describe("Tests Create and delete project", () => {
   const name = "Project 6";
   let id;
 
