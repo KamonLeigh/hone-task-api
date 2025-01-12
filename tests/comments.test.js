@@ -68,4 +68,55 @@ describe("Tests should retrive comments from task", async () => {
     expect(res.status).toBe(200);
     expect(result).toEqual(commentsListUserOne[1]);
   });
+
+  test("Should not list comments for user one", async () => {
+    const req = createTestRequest(`/comment/${tasksIds[0]}`, {
+      method: "GET",
+      headers: userTwoHeaders,
+    });
+
+    const res = await app.fetch(req);
+    comments = await res.json();
+
+    let result = [];
+
+    if (comments.length > 0) {
+      result = comments.data.map((comment) => comment.comment);
+    }
+
+    expect(res.status).toBe(200);
+    expect(result).not.toEqual(commentsListUserOne[1]);
+  });
+
+  test("Should not allow user to create comment without credentials", async () => {
+    const req = createTestRequest(`/comment/${tasksIds[0]}`, {
+      method: "POST",
+      body: {
+        comment: "This is a new comment",
+      },
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(401);
+  });
+
+  test("Should allow user to create comment without credentials", async () => {
+    const req = createTestRequest(`/comment/${tasksIds[0]}`, {
+      method: "POST",
+      headers: userOneHeaders,
+      body: {
+        comment: "This is a new comment",
+      },
+    });
+
+    const res = await app.fetch(req);
+    const result = await res.json();
+
+    expect(result.id).toBeDefined();
+    expect(typeof result.id).toBe("string");
+    expect(result.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
+    expect(res.status).toBe(201);
+  });
 });

@@ -166,6 +166,8 @@ export const insertCommentsSchema = createInsertSchema(comments, {
   slug: true,
   createdAt: true,
   updatedAt: true,
+  taskId: true,
+  authorId: true,
 });
 
 export type CreateCommentBody = z.infer<typeof insertCommentsSchema>;
