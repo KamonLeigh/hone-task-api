@@ -43,13 +43,13 @@ export async function projectHandeler(c: Context) {
     .from(projects)
     .where(and(eq(projects.slug, slug), eq(projects.ownerId, ownerId)));
 
-  if (!project) {
-    return c.json({ error: "Project not found" }, 404);
+  if (!project.length) {
+    return c.json({ error: "Project not found" }, 200);
   }
 
   return c.json(
     {
-      data: selectProjectsSchema.parse(project),
+      data: selectProjectsSchema.parse(project[0]),
     },
     200,
   );
@@ -90,7 +90,7 @@ export async function updateProjectHandeler(c: CustomContext) {
       .set({ name })
       .where(and(eq(projects.ownerId, ownerId), eq(projects.slug, slug)));
 
-    if ((result as any)?.rowCount === 0) {
+    if ((result as any)?.changes === 0) {
       return c.json({ error: "Failed to update project" }, 404);
     }
 
@@ -109,9 +109,19 @@ export async function deleteProjectHandeler(c: Context) {
     .where(and(eq(projects.ownerId, ownerId), eq(projects.slug, slug)))
     .returning({ id: projects.slug });
 
+  if (!project.length) {
+    return c.json(
+      {
+        message: "Unable to find project",
+      },
+      404,
+    );
+  }
+
   const res: NewProjectResponse = {
     id: project[0].id,
     message: "project removed",
   };
+
   return c.json(res, 200);
 }

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "cb5af213-ae28-4cb8-b553-853334bd5c76",
+  "id": "a71fb95e-7f72-4ba4-924a-8e059260ce6f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comments": {
@@ -48,11 +48,18 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
-        "slug_idx": {
-          "name": "slug_idx",
+        "comments_slug_idx": {
+          "name": "comments_slug_idx",
           "columns": [
             "slug"
           ],
@@ -83,7 +90,7 @@
           "columnsTo": [
             "slug"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -128,11 +135,18 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
-        "slug_idx": {
-          "name": "slug_idx",
+        "projects_slug_idx": {
+          "name": "projects_slug_idx",
           "columns": [
             "slug"
           ],
@@ -205,8 +219,8 @@
         }
       },
       "indexes": {
-        "slug_idx": {
-          "name": "slug_idx",
+        "tasks_slug_idx": {
+          "name": "tasks_slug_idx",
           "columns": [
             "slug"
           ],
@@ -237,7 +251,7 @@
           "columnsTo": [
             "slug"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

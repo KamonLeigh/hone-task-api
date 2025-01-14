@@ -3,16 +3,18 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "Bun --env-file=.env.development.local run --watch index.ts",
-    "migrate:initial": "bunx --bun drizzle-kit generate --dialect sqlite --schema ./db/schema.ts",
-    "migrate": "bun run ./db/migrate.ts",
-    "generate": "bunx --nun  drizzle-kit generate",
-    "push": "—bun drizzle-kit push:sqlite",
-    "studio": "bunx --bun drizzle-kit studio"
+    "dev": "Bun --env-file=.env.development.local --watch index.ts",
+    "generate": "bun --bun run drizzle-kit generate",
+    "migrate": "bun --bun --env-file=.env.development.local ./db/migrate.ts",
+    "migrate:test": "bun --bun --env-file=.env.test.local run drizzle-kit migrate",
+    "studio": "bunx --bun drizzle-kit studio",
+    "drop:db": " bun --bun --env-file=.env.development.local run drizzle-kit migrate",
+    "test:bun": "bun --env-file=.env.test.local test --preload ./tests/setup.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.1.13",
     "@types/jsonwebtoken": "^9.0.7",
+    "bun-types": "^1.1.42",
     "drizzle-kit": "^0.28.1"
   },
   "peerDependencies": {

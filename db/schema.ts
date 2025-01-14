@@ -59,12 +59,12 @@ export const projects = table(
     createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
       () => new Date(),
     ),
-    updatedAt: integer("created_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp" })
       .$defaultFn(() => new Date())
       .$onUpdateFn(() => new Date()),
   },
   (table) => ({
-    slugIdx: index("slug_idx").on(table.slug),
+    slugIdx: index("projects_slug_idx").on(table.slug),
   }),
 );
 
@@ -106,7 +106,7 @@ export const tasks = table(
       .$onUpdateFn(() => new Date()),
   },
   (table) => ({
-    slugIdx: index("slug_idx").on(table.slug),
+    slugIdx: index("tasks_slug_idx").on(table.slug),
   }),
 );
 
@@ -121,6 +121,8 @@ export const insertTasksSchema = createInsertSchema(tasks, {
   slug: true,
   createdAt: true,
   updatedAt: true,
+  ownerId: true,
+  projectId: true,
 });
 
 export type CreateTaskBody = z.infer<typeof insertTasksSchema>;
@@ -144,12 +146,12 @@ export const comments = table(
     createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
       () => new Date(),
     ),
-    updatedAt: integer("created_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp" })
       .$defaultFn(() => new Date())
       .$onUpdateFn(() => new Date()),
   },
   (table) => ({
-    slugIdx: index("slug_idx").on(table.slug),
+    slugIdx: index("comments_slug_idx").on(table.slug),
   }),
 );
 
@@ -164,6 +166,8 @@ export const insertCommentsSchema = createInsertSchema(comments, {
   slug: true,
   createdAt: true,
   updatedAt: true,
+  taskId: true,
+  authorId: true,
 });
 
 export type CreateCommentBody = z.infer<typeof insertCommentsSchema>;

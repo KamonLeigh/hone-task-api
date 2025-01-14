@@ -14,7 +14,7 @@ import {
 const taskRoutes = new Hono();
 
 const paramsTaskId = paramsId.extend({
-  tasksId: z.string(),
+  taskId: z.string(),
 });
 
 taskRoutes
@@ -22,14 +22,15 @@ taskRoutes
   .post(
     "/:id",
     authenticate,
-    zValidator("json", insertTasksSchema),
     zValidator("param", paramsId),
+    zValidator("json", insertTasksSchema),
     createTaskHandler as unknown as any,
   )
   .put(
     "/:id/:taskId",
     authenticate,
     zValidator("param", paramsTaskId),
+    zValidator("json", insertTasksSchema),
     updateTaskHandler as unknown as any,
   )
   .delete(

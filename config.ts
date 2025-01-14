@@ -1,7 +1,9 @@
 import { z } from "@hono/zod-openapi";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   DATABASE_URL: z.string(),
   DATABASE_AUTH_TOKEN: z.string().optional(),
   DEBUG: z.coerce.boolean().default(false),
@@ -11,6 +13,7 @@ const envSchema = z.object({
     .min(10, { message: "Must be more than 10 characters" }),
   JWT_EXPIRE_IN: z.string(),
   PASSWORD_SALT: z.string(),
+  DATABASE: z.string(),
 });
 
 // export const config = createEnvSchema({
@@ -24,8 +27,15 @@ const envSchema = z.object({
 //     PORT: z.string().transform(Number).default('3000'),
 //   })
 // })
+//
+//
 
-const config = envSchema.parse(Bun.env);
+const getEnv = () => {
+  const env = typeof Bun !== "undefined" ? Bun.env : process.env;
+  return envSchema.parse(env);
+};
+
+const config = envSchema.parse(getEnv());
 
 export type Config = z.infer<typeof envSchema>;
 

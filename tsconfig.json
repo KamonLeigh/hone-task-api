@@ -7,13 +7,15 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    "types": ["bun-types"],
     "paths": {
       "@routes/*": ["./routes/*"],
       "@db/*": ["./db/*"],
       "@config": ["./config"],
       "@util": ["./util"],
       "@auth": ["./auth"],
-      "@middleware/*": ["./middleware/*"]
+      "@middleware/*": ["./middleware/*"],
+      "@app": ["./app"]
     },
 
     // Bundler mode
