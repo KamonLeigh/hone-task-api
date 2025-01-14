@@ -28,6 +28,7 @@ describe("Tests should retrive comments from task", async () => {
   let projectId;
   let tasksIds;
   let comments;
+  let newCommentId;
 
   test("Should not list comments from task without credentials", async () => {
     const reqPro = createTestRequest("/project", {
@@ -112,11 +113,69 @@ describe("Tests should retrive comments from task", async () => {
     const res = await app.fetch(req);
     const result = await res.json();
 
+    newCommentId = result.id;
     expect(result.id).toBeDefined();
     expect(typeof result.id).toBe("string");
     expect(result.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
     );
     expect(res.status).toBe(201);
+  });
+
+  test("Should not be able to update with invalid id", async () => {
+    const req = createTestRequest(`/comment/aaaaaaaaaaaa`, {
+      method: "PUT",
+      headers: userOneHeaders,
+      body: {
+        comment: "Update new comment",
+      },
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+  });
+
+  test("Should be able to update comment", async () => {
+    const req = createTestRequest(`/comment/${newCommentId}`, {
+      method: "PUT",
+      headers: userOneHeaders,
+      body: {
+        comment: "Update new comment",
+      },
+    });
+
+    const res = await app.fetch(req);
+    const result = await res.json();
+    expect(result.message).toBe("Comment updated successfully");
+    expect(res.status).toBe(200);
+  });
+
+  test("Should not be able to delete without credentials", async () => {
+    const req = createTestRequest(`/comment/aaaaaaaaaaaa`, {
+      method: "DELETE",
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(401);
+  });
+
+  test("Should not be able to delete with invalid id", async () => {
+    const req = createTestRequest(`/comment/aaaaaaaaaaaa`, {
+      method: "DELETE",
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(404);
+  });
+
+  test("Should be able to delete comment", async () => {
+    const req = createTestRequest(`/comment/${newCommentId}`, {
+      method: "DELETE",
+      headers: userOneHeaders,
+    });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(200);
   });
 });
