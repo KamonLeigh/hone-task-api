@@ -104,7 +104,6 @@ export async function deleteCommentHandler(c: Context) {
       id: comments.slug,
     });
 
-  console.log(comment, "ggggggggggggggggggggg");
   if (!comment) {
     return c.json({ error: "Comment not found" }, 404);
   }
