@@ -4,6 +4,7 @@ import config from "./config";
 import { onError, onNotFound } from "@util";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
+import { swaggerUI } from "@hono/swagger-ui";
 import userRoutes from "@routes/user";
 import projectRoutes from "@routes/project";
 import taskRoutes from "@routes/task";
@@ -23,6 +24,7 @@ app.route("/user", userRoutes);
 app.route("/project", projectRoutes);
 app.route("/task", taskRoutes);
 app.route("/comment", commentRoutes);
+app.get("/ui", swaggerUI({ url: "/doc" }));
 app.notFound(onNotFound);
 
 app.onError(onError);
