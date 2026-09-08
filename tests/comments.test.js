@@ -124,7 +124,7 @@ describe("Tests should retrive comments from task", async () => {
 
   test("Should not be able to update with invalid id", async () => {
     const req = createTestRequest(`/comment/aaaaaaaaaaaa`, {
-      method: "PUT",
+      method: "PATCH",
       headers: userOneHeaders,
       body: {
         comment: "Update new comment",
@@ -137,7 +137,7 @@ describe("Tests should retrive comments from task", async () => {
 
   test("Should be able to update comment", async () => {
     const req = createTestRequest(`/comment/${newCommentId}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: userOneHeaders,
       body: {
         comment: "Update new comment",

@@ -35,7 +35,7 @@ commentRoutes.get(
   getCommentHandler,
 );
 
-commentRoutes.put(
+commentRoutes.patch(
   "/:id",
   authenticate,
   zValidator("param", commentParamId),
