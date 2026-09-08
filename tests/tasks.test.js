@@ -55,14 +55,15 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
     expect(result).toEqual(taskListUserOne[1]);
 
-    test("Should not list tasks without credentials", async () => {
-      const req = createTestRequest(`/task/${id}`, {
-        method: "GET",
-      });
+  });
 
-      const res = await app.fetch(req);
-      expect(res.status).toBe(401);
+  test("Should not list tasks without credentials", async () => {
+    const req = createTestRequest(`/task/${id}`, {
+      method: "GET",
     });
+
+    const res = await app.fetch(req);
+    expect(res.status).toBe(401);
   });
 
   test("Should not be able to insert task with no user data", async () => {
