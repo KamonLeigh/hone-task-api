@@ -3,19 +3,13 @@ import { db } from "@db/db";
 import { selectProjectsSchema, projects } from "@db/schema";
 import type { CreateProjectBody } from "@db/schema";
 import type { Context } from "hono";
-import type { ZodPromise } from "zod";
-import { StatusCode } from "@util";
+import { StatusCode, successResponse, errorResponse } from "@util";
 
 interface CustomContext extends Context {
   get(key: "user"): { id: string };
   req: Context["req"] & {
     valid<T = CreateProjectBody>(target: "json"): T;
   };
-}
-
-export interface NewProjectResponse {
-  id: string;
-  message?: string;
 }
 
 export async function createProjectHandler(c: CustomContext) {
@@ -29,10 +23,13 @@ export async function createProjectHandler(c: CustomContext) {
       id: projects.slug,
     });
 
-  const res: NewProjectResponse = {
-    id: project[0].id,
-  };
-  return c.json(res, 201);
+  return successResponse(c, {
+    data: {
+      id: project[0].id
+    },
+    message: "Project Created",
+    status: StatusCode.CREATED
+  })
 }
 
 export async function projectHandler(c: Context) {
@@ -45,15 +42,17 @@ export async function projectHandler(c: Context) {
     .where(and(eq(projects.slug, slug), eq(projects.ownerId, ownerId)));
 
   if (!project.length) {
-    return c.json({ error: "Project not found" }, StatusCode.NOT_FOUND);
+    return errorResponse(c, {
+      message: "Project not found",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
-  return c.json(
-    {
-      data: selectProjectsSchema.parse(project[0]),
-    },
-    200,
-  );
+  return successResponse(c, {
+    data: selectProjectsSchema.parse(project[0]),
+    message: "Project found",
+    status: StatusCode.OK
+  })
 }
 export async function projectListHandler(c: Context) {
   const { id: ownerId } = c.get("user");
@@ -63,21 +62,11 @@ export async function projectListHandler(c: Context) {
     .from(projects)
     .where(eq(projects.ownerId, ownerId));
 
-  if (!projectList) {
-    return c.json(
-      {
-        error: "Project(s) not found",
-      },
-      404,
-    );
-  }
-
-  return c.json(
-    {
-      data: projectList.map((project) => selectProjectsSchema.parse(project)),
-    },
-    200,
-  );
+  return successResponse(c, {
+    data: projectList.map((project) => selectProjectsSchema.parse(project)),
+    message: projectList.length ? "Project List" : "No Project(s) found",
+    status: StatusCode.OK
+  })
 }
 
 export async function updateProjectHandler(c: CustomContext) {
@@ -85,20 +74,24 @@ export async function updateProjectHandler(c: CustomContext) {
   const { id: slug } = c.req.param();
   const { name } = c.req.valid("json");
 
-  try {
     const result = await db
       .update(projects)
       .set({ name })
       .where(and(eq(projects.ownerId, ownerId), eq(projects.slug, slug)));
 
     if ((result as any)?.changes === 0) {
-      return c.json({ error: "Failed to update project" }, 404);
+      return errorResponse(c, {
+        message: "Failed to update project",
+        status: StatusCode.NOT_FOUND
+        })
     }
-
-    return c.json({ message: "Project updated successfully" }, 200);
-  } catch (error) {
-    return c.json({ error: "Failed to update project" }, 500);
-  }
+  return successResponse(c, {
+    data: {
+      id: slug
+    },
+    message: "Project updated successfully",
+    status: StatusCode.OK
+  })
 }
 
 export async function deleteProjectHandler(c: Context) {
@@ -111,18 +104,17 @@ export async function deleteProjectHandler(c: Context) {
     .returning({ id: projects.slug });
 
   if (!project.length) {
-    return c.json(
-      {
-        message: "Unable to find project",
-      },
-      404,
-    );
+    return errorResponse(c, {
+      message: "Unable to find Project",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
-  const res: NewProjectResponse = {
-    id: project[0].id,
-    message: "project removed",
-  };
-
-  return c.json(res, 200);
+  return successResponse(c, {
+    data: {
+      id: project[0].id,
+    },
+    message: "Project deleted",
+    status: StatusCode.OK
+  })
 }

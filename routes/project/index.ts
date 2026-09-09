@@ -11,8 +11,6 @@ import {
   updateProjectHandler,
 } from "./handler";
 
-import type { NewProjectResponse } from "./handler";
-
 const projectRoutes = new Hono();
 
 export const paramsId = z.object({
