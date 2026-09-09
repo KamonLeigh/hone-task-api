@@ -1,8 +1,10 @@
 import { eq, and } from "drizzle-orm";
 import type { Context } from "hono";
 import { db } from "@db/db";
+import { successResponse, errorResponse, StatusCode } from "@util";
 import { selectTasksSchema, tasks, projects } from "@db/schema";
 import type { CreateTaskBody } from "@db/schema";
+
 
 interface CustomContext extends Context {
   get(key: "user"): { id: string };
@@ -10,12 +12,6 @@ interface CustomContext extends Context {
     valid<T = CreateTaskBody>(target: "json"): T;
   };
 }
-
-export interface TaskResponse {
-  id: string;
-  message?: string;
-}
-
 export async function taskListHandler(c: Context) {
   const { id: projectId } = c.req.param();
   const { id: ownerId } = c.get("user");
@@ -25,21 +21,18 @@ export async function taskListHandler(c: Context) {
     .from(tasks)
     .where(and(eq(tasks.projectId, projectId), eq(tasks.ownerId, ownerId)));
 
-  if (!taskList) {
-    return c.json(
-      {
-        error: "Task(s) not found",
-      },
-      404,
-    );
+  if (!taskList.length) {
+    return errorResponse(c, {
+      message: "Task(s) not found",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
-  return c.json(
-    {
-      data: taskList.map((task) => selectTasksSchema.parse(task)),
-    },
-    200,
-  );
+  return successResponse(c, {
+    data: taskList.map((task) => selectTasksSchema.parse(task)),
+    message: "Tasks List",
+    status: StatusCode.OK
+  })
 }
 
 export async function createTaskHandler(c: CustomContext) {
@@ -53,7 +46,10 @@ export async function createTaskHandler(c: CustomContext) {
     .where(and(eq(projects.slug, projectId), eq(projects.ownerId, ownerId)));
 
   if (!project.length) {
-    return c.json({ error: "Invalid id: Project not found" }, 404);
+    return errorResponse(c, {
+      message: "Invalid id: Project not found",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
   const task = await db
@@ -63,11 +59,13 @@ export async function createTaskHandler(c: CustomContext) {
       id: tasks.slug,
     });
 
-  const res: TaskResponse = {
-    id: task[0].id,
-  };
-
-  return c.json(res, 201);
+  return successResponse(c, {
+    data: {
+      id : task[0].id,
+    },
+    message: "Task created",
+    status: StatusCode.CREATED
+  })
 }
 
 export async function updateTaskHandler(c: CustomContext) {
@@ -75,37 +73,30 @@ export async function updateTaskHandler(c: CustomContext) {
   const { id: ownerId } = c.get("user");
   const { name } = c.req.valid("json");
 
-  const initialTask = await db
-    .select({ ownerId: tasks.ownerId })
-    .from(tasks)
-    .where(
-      and(
-        eq(tasks.projectId, projectId),
-        eq(tasks.slug, slug),
-        eq(tasks.ownerId, ownerId),
-      ),
-    );
-
-  if (!initialTask.length) {
-    return c.json({ error: "Failed to update task: incorrect details" }, 404);
-  }
-
   const task = await db
-    .update(tasks)
-    .set({ name })
-    .where(
-      and(
-        eq(tasks.ownerId, ownerId),
-        eq(tasks.projectId, projectId),
-        eq(tasks.slug, slug),
-      ),
-    );
+      .update(tasks)
+      .set({ name })
+      .where(
+        and(
+          eq(tasks.ownerId, ownerId),
+          eq(tasks.projectId, projectId),
+          eq(tasks.slug, slug),
+        ),
+      );
 
-  if ((task as any)?.rowCount === 0) {
-    return c.json({ error: "Failed to update task" }, 404);
+  if ((task as any)?.changes === 0) {
+      return errorResponse(c, {
+        message: "Failed to update Task",
+        status: StatusCode.NOT_FOUND
+      })
   }
-
-  return c.json({ message: "Task successfully updated" }, 200);
+  return successResponse(c, {
+    data: {
+      id: slug
+    },
+    message: "Task successfully updated",
+    status: StatusCode.OK
+  })
 }
 
 export async function deleteTaskHandler(c: Context) {
@@ -118,7 +109,10 @@ export async function deleteTaskHandler(c: Context) {
     .where(and(eq(tasks.slug, slug), eq(tasks.ownerId, ownerId)));
 
   if (!initialTask.length) {
-    return c.json({ error: "Failed to update task: incorrect details" }, 404);
+    return errorResponse(c, {
+      message: "Failed to update Task: incorrect details",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
   const task = await db
@@ -126,10 +120,11 @@ export async function deleteTaskHandler(c: Context) {
     .where(and(eq(tasks.ownerId, ownerId), eq(tasks.slug, slug)))
     .returning({ id: tasks.slug });
 
-  const res: TaskResponse = {
-    id: task[0].id,
-    message: "Task removed",
-  };
-
-  return c.json(res, 200);
+  return successResponse(c, {
+    data: {
+      id: task[0].id,
+    },
+    message: "Task deleted",
+    status: StatusCode.OK
+  })
 }
