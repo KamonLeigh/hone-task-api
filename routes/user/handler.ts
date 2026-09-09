@@ -112,7 +112,8 @@ export function logout(c: Context) {
   const token = authHeader.split(" ")[1];
 
   revokeToken(token);
-  return c.json({}, 204);
+  c.status(204)
+  return c.body(null);
 }
 
 export function refreshTokenHandler(c: Context) {
