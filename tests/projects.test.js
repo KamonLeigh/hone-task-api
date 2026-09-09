@@ -128,7 +128,7 @@ describe("Tests create and update project", async () => {
     id = result.id;
 
     const reqTwo = createTestRequest(`/project/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: newName,
       },
@@ -141,7 +141,7 @@ describe("Tests create and update project", async () => {
 
   test("Should be able to update project with correct credentials", async () => {
     const req = createTestRequest(`/project/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: newName,
       },
@@ -156,7 +156,7 @@ describe("Tests create and update project", async () => {
 
   test("Should not be able to update with incorrect credentials", async () => {
     const req = createTestRequest(`/project/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name,
       },

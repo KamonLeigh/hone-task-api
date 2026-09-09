@@ -34,7 +34,7 @@ export async function createProjectHandler(c: CustomContext) {
   return c.json(res, 201);
 }
 
-export async function projectHandeler(c: Context) {
+export async function projectHandler(c: Context) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
 
@@ -79,7 +79,7 @@ export async function projectListHandler(c: Context) {
   );
 }
 
-export async function updateProjectHandeler(c: CustomContext) {
+export async function updateProjectHandler(c: CustomContext) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
   const { name } = c.req.valid("json");
@@ -100,7 +100,7 @@ export async function updateProjectHandeler(c: CustomContext) {
   }
 }
 
-export async function deleteProjectHandeler(c: Context) {
+export async function deleteProjectHandler(c: Context) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
 

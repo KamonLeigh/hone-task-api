@@ -5,10 +5,10 @@ import authenticate from "@middleware/auth";
 import { insertProjectsSchema } from "@db/schema";
 import {
   createProjectHandler,
-  deleteProjectHandeler,
-  projectHandeler,
+  deleteProjectHandler,
+  projectHandler,
   projectListHandler,
-  updateProjectHandeler,
+  updateProjectHandler,
 } from "./handler";
 
 import type { NewProjectResponse } from "./handler";
@@ -26,18 +26,18 @@ projectRoutes
     zValidator("json", insertProjectsSchema),
     createProjectHandler as unknown as any,
   )
-  .get("/:id", authenticate, zValidator("param", paramsId), projectHandeler)
+  .get("/:id", authenticate, zValidator("param", paramsId), projectHandler)
   .get("/", authenticate, projectListHandler)
-  .put(
+  .patch(
     "/:id",
     authenticate,
     zValidator("json", insertProjectsSchema),
-    updateProjectHandeler as unknown as any,
+    updateProjectHandler as unknown as any,
   )
   .delete(
     "/:id",
     authenticate,
     zValidator("param", paramsId),
-    deleteProjectHandeler,
+    deleteProjectHandler,
   );
 export default projectRoutes;
