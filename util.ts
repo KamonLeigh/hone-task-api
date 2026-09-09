@@ -8,19 +8,28 @@ export function generateKey(): string {
   return v4();
 }
 
-const OK = 200;
-const INTERNAL_SERVER_ERROR = 500;
-type StatusCode = 400 | 401 | 403 | 404 | 500;
-const NOT_FOUND = 404;
+export const StatusCode = {
+  OK : 200,
+  CREATED : 201,
+  NO_CONTENT : 204,
+  BAD_REQUEST : 400,
+  UNAUTHORIZED : 401,
+  FORBIDDEN : 403,
+  NOT_FOUND : 404,
+  CONFLICT : 409,
+  INTERNAL_SERVER_ERROR : 500,
+} as const
+
+export type StatusCode = (typeof StatusCode)[keyof typeof StatusCode];
 
 export const onError: ErrorHandler = (err, c) => {
   const currentStatus =
     "status" in err ? err.status : c.newResponse(null).status;
 
   const statusCode =
-    currentStatus !== OK
-      ? (currentStatus as StatusCode)
-      : INTERNAL_SERVER_ERROR;
+    currentStatus !== StatusCode.OK
+      ? (currentStatus as Exclude<StatusCode, 204>)
+      : StatusCode.INTERNAL_SERVER_ERROR;
 
   return c.json(
     {

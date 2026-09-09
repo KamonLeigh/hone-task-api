@@ -1,6 +1,6 @@
 import { db } from "@db/db";
 import { users, selectUsersSchema } from "@db/schema";
-import { generateHash } from "@util";
+import { generateHash, StatusCode } from "@util";
 import { generateToken, revokeToken } from "@auth";
 import type { Context } from "hono";
 import { CustomError } from "@util";
@@ -112,7 +112,7 @@ export function logout(c: Context) {
   const token = authHeader.split(" ")[1];
 
   revokeToken(token);
-  c.status(204)
+  c.status(StatusCode.NO_CONTENT)
   return c.body(null);
 }
 
