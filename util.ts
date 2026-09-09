@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import type { ErrorHandler, NotFoundHandler } from "hono";
 import crypto from "node:crypto";
 import util from "node:util";
+import type { Context } from "hono";
 import config from "@config";
 
 export function generateKey(): string {
@@ -48,13 +49,8 @@ export class CustomError extends Error {
   }
 }
 
-export const onNotFound: NotFoundHandler = (c) => {
-  return c.json(
-    {
-      message: `route not found: ${c.req.path}`,
-    },
-    NOT_FOUND,
-  );
+export const onNotFound: NotFoundHandler = (c: Context) => {
+  return errorResponse(c, { message: `route not found: ${c.req.path}`, status: StatusCode.NOT_FOUND})
 };
 const pbkdf = util.promisify(crypto.pbkdf2);
 export async function generateHash(password: string, salt?: string) {
@@ -68,4 +64,22 @@ export async function generateHash(password: string, salt?: string) {
   );
 
   return { hash, salt };
+}
+
+export function successResponse(c: Context, {
+  data,
+  message,
+  status
+}: { data?: any; message?: string; status?: StatusCode }): Response {
+
+  return c.json({ success: true, ...(message && { message}), ...(data && { data})}, status as Exclude<StatusCode, 204>)
+}
+
+
+export function errorResponse(c: Context, {
+  message,
+  status
+}: { message?: string; status?: StatusCode }): Response {
+
+  return c.json({ success: false, ...(message && { message }) }, status as Exclude<StatusCode, 204>)
 }
