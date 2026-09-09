@@ -1,4 +1,5 @@
 import { verifyJWTfn, isTokenRevoked } from "@auth";
+import { StatusCode } from "@util";
 import type { Context } from "hono";
 
 export default async function (c: Context, next: any) {
@@ -9,7 +10,7 @@ export default async function (c: Context, next: any) {
       {
         message: "No token provided",
       },
-      401,
+      StatusCode.UNAUTHORIZED,
     );
   }
 

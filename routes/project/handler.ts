@@ -4,6 +4,7 @@ import { selectProjectsSchema, projects } from "@db/schema";
 import type { CreateProjectBody } from "@db/schema";
 import type { Context } from "hono";
 import type { ZodPromise } from "zod";
+import { StatusCode } from "@util";
 
 interface CustomContext extends Context {
   get(key: "user"): { id: string };
@@ -44,7 +45,7 @@ export async function projectHandler(c: Context) {
     .where(and(eq(projects.slug, slug), eq(projects.ownerId, ownerId)));
 
   if (!project.length) {
-    return c.json({ error: "Project not found" }, 200);
+    return c.json({ error: "Project not found" }, StatusCode.NOT_FOUND);
   }
 
   return c.json(

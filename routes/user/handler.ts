@@ -5,6 +5,7 @@ import { generateToken, revokeToken } from "@auth";
 import type { Context } from "hono";
 import { CustomError } from "@util";
 
+
 import type { User } from "@db/schema";
 
 export type Token = Pick<User, "id" | "name">;
@@ -30,7 +31,7 @@ export async function signUp(c: CustomContext) {
       {
         message: "name is already taken",
       },
-      404,
+      StatusCode.CONFLICT
     );
   }
 
