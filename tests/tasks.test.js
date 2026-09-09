@@ -114,7 +114,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if no credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -129,7 +129,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if wrong credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -145,7 +145,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if erroneous url is provided both params", async () => {
     const req = createTestRequest(`/task/bbbbb/aaaaaaaaa}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -161,7 +161,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if erroneous url is provided one param: id", async () => {
     const req = createTestRequest(`/task/${id}/aaaaaaaaassss`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -177,7 +177,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if erroneous url is provided one param: id", async () => {
     const req = createTestRequest(`/task/aaaaaaaaaaaa/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -193,7 +193,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if wrong credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
