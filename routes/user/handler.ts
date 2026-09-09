@@ -1,9 +1,9 @@
 import { db } from "@db/db";
 import { users, selectUsersSchema } from "@db/schema";
-import { generateHash, StatusCode } from "@util";
+import { generateHash, StatusCode, CustomError, successResponse,errorResponse } from "@util";
 import { generateToken, revokeToken } from "@auth";
 import type { Context } from "hono";
-import { CustomError } from "@util";
+
 
 
 import type { User } from "@db/schema";
@@ -27,24 +27,29 @@ export async function signUp(c: CustomContext) {
   });
 
   if (user) {
-    return c.json(
-      {
-        message: "name is already taken",
-      },
-      StatusCode.CONFLICT
-    );
+    return errorResponse(c, {
+      message: "name is already taken",
+      status: StatusCode.CONFLICT
+    })
   }
 
   const { salt, hash } = await generateHash(password);
 
-  const newUser = await db.insert(users).values({ name, salt, hash });
+  const [newUser] = await db.insert(users).values({ name, salt, hash }).returning({
+    id: users.id,
+    name: users.name
+  });
 
-  return c.json(
-    {
+  const token = generateToken({ id: newUser.id, name: newUser.name })
+
+  return successResponse(c, {
+    data: {
       user: newUser,
+      token
     },
-    201,
-  );
+    message: "User created",
+    status: StatusCode.CREATED
+  })
 }
 
 export async function signIn(c: CustomContext) {
@@ -57,14 +62,14 @@ export async function signIn(c: CustomContext) {
   });
 
   if (!user) {
-    const error = new CustomError("wrong credentials provided", 401);
+    const error = new CustomError("wrong credentials provided", StatusCode.UNAUTHORIZED);
     throw error;
   }
 
   const { hash } = await generateHash(password, user.salt);
 
   if (hash !== user.hash) {
-    const error = new CustomError("wrong credentials provided", 401);
+    const error = new CustomError("wrong credentials provided", StatusCode.UNAUTHORIZED);
     throw error;
   }
 
@@ -75,9 +80,13 @@ export async function signIn(c: CustomContext) {
 
   const token = generateToken(data);
 
-  return c.json({
-    token,
-  });
+  return successResponse(c, {
+    data: {
+      token
+    },
+    message: "User logged in",
+    status: StatusCode.OK
+  })
 }
 
 export async function me(c: Context) {
@@ -90,22 +99,20 @@ export async function me(c: Context) {
   });
 
   if (!user) {
-    return c.json(
-      {
-        message: "User not found",
-      },
-      401,
-    );
+    return errorResponse(c, {
+      message: "User not found",
+      status: StatusCode.UNAUTHORIZED
+    })
   }
 
   const userResponse = selectUsersSchema.parse(userData);
-
-  return c.json(
-    {
-      user: userResponse,
+  return successResponse(c, {
+    data: {
+      user: userResponse
     },
-    200,
-  );
+    message: "User",
+    status: StatusCode.OK
+  })
 }
 
 export function logout(c: Context) {
@@ -121,8 +128,11 @@ export function refreshTokenHandler(c: Context) {
   const user = c.get("user");
 
   const token = generateToken(user);
-
-  return c.json({
-    token,
-  });
+  return successResponse(c, {
+    data: {
+      token
+    },
+    message: "Refreshed User",
+    status: StatusCode.OK
+  })
 }
