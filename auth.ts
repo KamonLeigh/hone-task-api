@@ -9,12 +9,12 @@ const dataSchema = z.object({
 
 export type Data = z.infer<typeof dataSchema>;
 
-const revokedToken = new Map<string, boolean>();
+const revokedToken = new Map<string, number>();
 
 export function generateToken(data: Data): string {
   return jwt.sign(data, config.JWT_SECRET, {
-    expiresIn: config.JWT_EXPIRE_IN,
-  });
+    expiresIn: config.JWT_EXPIRE_IN as string,
+  } as jwt.SignOptions);
 }
 
 export function verifyJWTfn(token: string): string | boolean | JwtPayload {
@@ -24,9 +24,19 @@ export function verifyJWTfn(token: string): string | boolean | JwtPayload {
 }
 
 export function isTokenRevoked(token: string): boolean {
-  return revokedToken.has(token);
-}
+  if (!revokedToken.has(token)) return false
 
+  const expiredAt = revokedToken.get(token)!
+
+  if (Date.now() > expiredAt) {
+    revokedToken.delete(token)
+    return false
+  }
+  return true
+}
 export function revokeToken(token: string): void {
-  revokedToken.set(token, true);
+  const decode = jwt.decode(token) as JwtPayload | null
+  if (decode?.exp) {
+    revokedToken.set(token, decode.exp * 1000)
+  }
 }

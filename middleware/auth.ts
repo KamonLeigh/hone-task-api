@@ -1,17 +1,15 @@
 import { verifyJWTfn, isTokenRevoked } from "@auth";
-import { StatusCode } from "@util";
+import { StatusCode, errorResponse } from "@util";
 import type { Context } from "hono";
 
 export default async function (c: Context, next: any) {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return c.json(
-      {
-        message: "No token provided",
-      },
-      StatusCode.UNAUTHORIZED,
-    );
+    return errorResponse(c, {
+      message: "No token provided",
+      status: StatusCode.UNAUTHORIZED
+    })
   }
 
   try {
@@ -20,18 +18,21 @@ export default async function (c: Context, next: any) {
     const isRevoked = isTokenRevoked(token);
 
     if (isRevoked) {
-      return c.json({ message: "Invalid token" });
+      return errorResponse(c, {
+        message: "Invalid token",
+        status: StatusCode.UNAUTHORIZED
+      })
     }
 
     const user = verifyJWTfn(token);
 
-    if (typeof user === "boolean" && user) {
-      return c.json({ message: "Invalid token" }, 401);
-    }
-
     c.set("user", user);
     await next();
   } catch {
-    return c.json({ message: "Invalid token" }, 401);
+    return errorResponse(c, {
+      message: "Invalid token",
+      status: StatusCode.UNAUTHORIZED
+    })
+
   }
 }
