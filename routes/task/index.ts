@@ -26,7 +26,7 @@ taskRoutes
     zValidator("json", insertTasksSchema),
     createTaskHandler as unknown as any,
   )
-  .put(
+  .patch(
     "/:id/:taskId",
     authenticate,
     zValidator("param", paramsTaskId),

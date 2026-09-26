@@ -2,25 +2,35 @@ import { v4 } from "uuid";
 import type { ErrorHandler, NotFoundHandler } from "hono";
 import crypto from "node:crypto";
 import util from "node:util";
+import type { Context } from "hono";
 import config from "@config";
 
 export function generateKey(): string {
   return v4();
 }
 
-const OK = 200;
-const INTERNAL_SERVER_ERROR = 500;
-type StatusCode = 400 | 401 | 403 | 404 | 500;
-const NOT_FOUND = 404;
+export const StatusCode = {
+  OK : 200,
+  CREATED : 201,
+  NO_CONTENT : 204,
+  BAD_REQUEST : 400,
+  UNAUTHORIZED : 401,
+  FORBIDDEN : 403,
+  NOT_FOUND : 404,
+  CONFLICT : 409,
+  INTERNAL_SERVER_ERROR : 500,
+} as const
+
+export type StatusCode = (typeof StatusCode)[keyof typeof StatusCode];
 
 export const onError: ErrorHandler = (err, c) => {
   const currentStatus =
     "status" in err ? err.status : c.newResponse(null).status;
 
   const statusCode =
-    currentStatus !== OK
-      ? (currentStatus as StatusCode)
-      : INTERNAL_SERVER_ERROR;
+    currentStatus !== StatusCode.OK
+      ? (currentStatus as Exclude<StatusCode, 204>)
+      : StatusCode.INTERNAL_SERVER_ERROR;
 
   return c.json(
     {
@@ -39,13 +49,8 @@ export class CustomError extends Error {
   }
 }
 
-export const onNotFound: NotFoundHandler = (c) => {
-  return c.json(
-    {
-      message: `route not found: ${c.req.path}`,
-    },
-    NOT_FOUND,
-  );
+export const onNotFound: NotFoundHandler = (c: Context) => {
+  return errorResponse(c, { message: `route not found: ${c.req.path}`, status: StatusCode.NOT_FOUND})
 };
 const pbkdf = util.promisify(crypto.pbkdf2);
 export async function generateHash(password: string, salt?: string) {
@@ -59,4 +64,22 @@ export async function generateHash(password: string, salt?: string) {
   );
 
   return { hash, salt };
+}
+
+export function successResponse(c: Context, {
+  data,
+  message,
+  status
+}: { data?: any; message?: string; status?: StatusCode }): Response {
+
+  return c.json({ success: true, ...(message && { message}), ...(data && { data})}, status as Exclude<StatusCode, 204>)
+}
+
+
+export function errorResponse(c: Context, {
+  message,
+  status
+}: { message?: string; status?: StatusCode }): Response {
+
+  return c.json({ success: false, ...(message && { message }) }, status as Exclude<StatusCode, 204>)
 }

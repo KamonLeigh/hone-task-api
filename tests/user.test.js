@@ -79,7 +79,7 @@ describe("Test profile of user", async () => {
     const res = await app.fetch(req);
     const data = await res.json();
 
-    expect(data.user.name).toBe(userData.name);
+    expect(data.data.user.name).toBe(userData.name);
     expect(res.status).toBe(200);
   });
 });

@@ -9,7 +9,8 @@
     "migrate:test": "bun --bun --env-file=.env.test.local run drizzle-kit migrate",
     "studio": "bunx --bun drizzle-kit studio",
     "drop:db": " bun --bun --env-file=.env.development.local run drizzle-kit migrate",
-    "test:bun": "bun --env-file=.env.test.local test --preload ./tests/setup.ts"
+    "test:bun": "bun --env-file=.env.test.local test --preload ./tests/setup.ts",
+    "test:coverage": "bun --env-file=.env.test.local test --preload ./tests/setup.ts --coverage"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",

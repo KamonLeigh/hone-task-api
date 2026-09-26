@@ -87,11 +87,11 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
     const res = await app.fetch(req);
     const result = await res.json();
-    taskId = result.id;
+    taskId = result.data.id;
 
-    expect(result.id).toBeDefined();
-    expect(typeof result.id).toBe("string");
-    expect(result.id).toMatch(
+    expect(result.data.id).toBeDefined();
+    expect(typeof result.data.id).toBe("string");
+    expect(result.data.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
     );
     expect(res.status).toBe(201);
@@ -109,12 +109,12 @@ describe("Tests should retrive tasks from user's project create and update", asy
     const res = await app.fetch(req);
     const result = await res.json();
     expect(res.status).toBe(404);
-    expect(result.error).toBeDefined();
+    expect(result.message).toBeDefined();
   });
 
   test("Should not update task if no credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -129,7 +129,7 @@ describe("Tests should retrive tasks from user's project create and update", asy
 
   test("Should not update task if wrong credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -139,13 +139,13 @@ describe("Tests should retrive tasks from user's project create and update", asy
     const res = await app.fetch(req);
     expect(res.status).toBe(404);
     const result = await res.json();
-    expect(result.error).toBeDefined();
-    expect(typeof result.error).toBe("string");
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 
   test("Should not update task if erroneous url is provided both params", async () => {
     const req = createTestRequest(`/task/bbbbb/aaaaaaaaa}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -155,13 +155,13 @@ describe("Tests should retrive tasks from user's project create and update", asy
     const res = await app.fetch(req);
     expect(res.status).toBe(404);
     const result = await res.json();
-    expect(result.error).toBeDefined();
-    expect(typeof result.error).toBe("string");
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 
   test("Should not update task if erroneous url is provided one param: id", async () => {
     const req = createTestRequest(`/task/${id}/aaaaaaaaassss`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -171,13 +171,13 @@ describe("Tests should retrive tasks from user's project create and update", asy
     const res = await app.fetch(req);
     expect(res.status).toBe(404);
     const result = await res.json();
-    expect(result.error).toBeDefined();
-    expect(typeof result.error).toBe("string");
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 
   test("Should not update task if erroneous url is provided one param: id", async () => {
     const req = createTestRequest(`/task/aaaaaaaaaaaa/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -187,13 +187,13 @@ describe("Tests should retrive tasks from user's project create and update", asy
     const res = await app.fetch(req);
     expect(res.status).toBe(404);
     const result = await res.json();
-    expect(result.error).toBeDefined();
-    expect(typeof result.error).toBe("string");
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 
   test("Should not update task if wrong credentials are provided", async () => {
     const req = createTestRequest(`/task/${id}/${taskId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: {
         name: updatedTask,
       },
@@ -233,7 +233,7 @@ describe("Tests handling deleting tasks", () => {
 
     const addRes = await app.fetch(addReq);
     const addResult = await addRes.json();
-    taskId = addResult.id;
+    taskId = addResult.data.id;
 
     const req = createTestRequest(`/task/${id}/${taskId}`, {
       method: "DELETE",
@@ -255,8 +255,8 @@ describe("Tests handling deleting tasks", () => {
     const res = await app.fetch(req);
     expect(res.status).toBe(404);
     const result = await res.json();
-    expect(result.error).toBeDefined();
-    expect(typeof result.error).toBe("string");
+    expect(result.message).toBeDefined();
+    expect(typeof result.message).toBe("string");
   });
 
   test("Should be able to delete task with the correct credentials", async () => {

@@ -1,6 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@db/db";
 import { selectCommentsSchema, comments, tasks } from "@db/schema";
+import { StatusCode, successResponse, errorResponse } from "@util";
 import type { CreateCommentBody } from "@db/schema";
 import type { Context } from "hono";
 
@@ -11,11 +12,6 @@ interface CustomContext extends Context {
   };
 }
 
-export interface CommentResponse {
-  id: string;
-  message?: string;
-}
-
 export async function createCommentHandler(c: CustomContext) {
   const { taskId } = c.req.param();
   const { id: authorId } = c.get("user");
@@ -24,12 +20,10 @@ export async function createCommentHandler(c: CustomContext) {
   const task = await db.select().from(tasks).where(eq(tasks.slug, taskId));
 
   if (!task.length) {
-    return c.json(
-      {
-        error: "Task not found",
-      },
-      404,
-    );
+    return errorResponse(c, {
+      message: "Task not found",
+      status: StatusCode.NOT_FOUND
+    })
   }
 
   const result = await db
@@ -37,11 +31,14 @@ export async function createCommentHandler(c: CustomContext) {
     .values({ comment, authorId, taskId })
     .returning({ id: comments.slug });
 
-  const res: CommentResponse = {
-    id: result[0].id,
-  };
-
-  return c.json(res, 201);
+  return successResponse(c,
+    {
+      data: {
+        id: result[0].id,
+      },
+      message: "Comment Created",
+      status: StatusCode.CREATED
+    })
 }
 
 export async function getCommentHandler(c: Context) {
@@ -51,21 +48,11 @@ export async function getCommentHandler(c: Context) {
     .from(comments)
     .where(eq(comments.taskId, taskId));
 
-  if (!commentList) {
-    return c.json(
-      {
-        error: "Comment(s) not found",
-      },
-      404,
-    );
-  }
-
-  return c.json(
-    {
-      data: commentList.map((comment) => selectCommentsSchema.parse(comment)),
-    },
-    200,
-  );
+  return successResponse(c, {
+    data: commentList.map((comment) => selectCommentsSchema.parse(comment)),
+    message: commentList.length ? "Comments for Task" : "No Comments found",
+    status: StatusCode.OK
+  })
 }
 
 export async function updateCommentHandler(c: CustomContext) {
@@ -79,10 +66,16 @@ export async function updateCommentHandler(c: CustomContext) {
     .where(and(eq(comments.authorId, authorId), eq(comments.slug, slug)));
 
   if ((result as any)?.changes === 0) {
-    return c.json({ error: "Failed to update task" }, 404);
+    return errorResponse(c, { message: "Failed to update task", status: StatusCode.NOT_FOUND})
   }
 
-  return c.json({ message: "Comment updated successfully" }, 200);
+  return successResponse(c, {
+    data: {
+    id: slug
+    },
+    message: "Comment updated successfully",
+    status: StatusCode.OK
+  })
 }
 
 export async function deleteCommentHandler(c: Context) {
@@ -95,7 +88,8 @@ export async function deleteCommentHandler(c: Context) {
     .where(and(eq(comments.slug, slug), eq(comments.authorId, authorId)));
 
   if (!initialComment.length) {
-    return c.json({ error: "Comment not found" }, 404);
+    return errorResponse(c, { message: "Comment not found", status: StatusCode.NOT_FOUND})
+
   }
   const comment = await db
     .delete(comments)
@@ -104,13 +98,11 @@ export async function deleteCommentHandler(c: Context) {
       id: comments.slug,
     });
 
-  if (!comment) {
-    return c.json({ error: "Comment not found" }, 404);
-  }
-  const res: CommentResponse = {
-    id: comment[0].id,
+  return successResponse(c, {
+    data: {
+      id: comment[0].id,
+    },
     message: "Comment removed",
-  };
-
-  return c.json(res, 200);
+    status: StatusCode.OK
+  })
 }

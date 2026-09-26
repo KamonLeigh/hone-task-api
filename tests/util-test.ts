@@ -35,7 +35,7 @@ export const generateTokenUser = async (body: {
   const res = await app.fetch(req);
   const data = await res.json();
 
-  return data;
+  return data.data;
 };
 
 export const clearDatabaseData = async () => {
