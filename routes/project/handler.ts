@@ -81,7 +81,7 @@ export async function updateProjectHandler(c: CustomContext) {
 
     if ((result as any)?.changes === 0) {
       return errorResponse(c, {
-        message: "Failed to update project",
+        message: "Failed to update Project",
         status: StatusCode.NOT_FOUND
         })
     }

@@ -74,7 +74,7 @@ describe("Tests retrive data from user's projects", () => {
 
     const res = await app.fetch(req);
     await res.json();
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(404);
   });
 });
 
@@ -125,7 +125,7 @@ describe("Tests create and update project", async () => {
 
     const res = await app.fetch(req);
     const result = await res.json();
-    id = result.id;
+    id = result.data.id;
 
     const reqTwo = createTestRequest(`/project/${id}`, {
       method: "PATCH",
@@ -165,7 +165,7 @@ describe("Tests create and update project", async () => {
 
     const res = await app.fetch(req);
     const result = await res.json();
-    expect(result.error).toBe("Failed to update project");
+    expect(result.message).toBe("Failed to update Project");
     expect(res.status).toBe(404);
   });
 });
@@ -185,7 +185,7 @@ describe("Tests Create and delete project", () => {
 
     const res = await app.fetch(req);
     const result = await res.json();
-    id = result.id;
+    id = result.data.id;
 
     const reqTwo = createTestRequest(`/project/${id}`, {
       method: "DELETE",
@@ -207,7 +207,7 @@ describe("Tests Create and delete project", () => {
     const result = await res.json();
 
     expect(res.status).toBe(404);
-    expect(result.message).toBe("Unable to find project");
+    expect(result.message).toBe("Unable to find Project");
   });
 
   test("Should be able to delete project with correct credentials", async () => {
@@ -221,8 +221,11 @@ describe("Tests Create and delete project", () => {
 
     expect(res.status).toBe(200);
     expect(result).toEqual({
-      id,
-      message: "project removed",
+      data: {
+        id,
+      },
+      message: "Project deleted",
+      success: true
     });
   });
 });

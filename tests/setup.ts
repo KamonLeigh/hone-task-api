@@ -60,13 +60,13 @@ beforeAll(async () => {
 
     // Add projects to user one
     projectsList.one.forEach(async (name: string) => {
-      await db.insert(projects).values({ ownerId: data.user.id, name });
+      await db.insert(projects).values({ ownerId: data.data.user.id, name });
     });
 
     const projectList = await db
       .select()
       .from(projects)
-      .where(eq(projects.ownerId, data.user.id));
+      .where(eq(projects.ownerId, data.data.user.id));
 
     // Add tasks to projects
 
@@ -76,7 +76,7 @@ beforeAll(async () => {
         const id = await db
           .insert(tasks)
           .values({
-            ownerId: data.user.id,
+            ownerId: data.data.user.id,
             projectId: list.slug,
             name,
           })
@@ -87,7 +87,7 @@ beforeAll(async () => {
           await db.insert(comments).values({
             comment,
             taskId,
-            authorId: data.user.id,
+            authorId: data.data.user.id,
           });
         });
       });

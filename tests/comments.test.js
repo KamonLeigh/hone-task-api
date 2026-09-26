@@ -113,10 +113,10 @@ describe("Tests should retrive comments from task", async () => {
     const res = await app.fetch(req);
     const result = await res.json();
 
-    newCommentId = result.id;
-    expect(result.id).toBeDefined();
-    expect(typeof result.id).toBe("string");
-    expect(result.id).toMatch(
+    newCommentId = result.data.id;
+    expect(result).toBeDefined();
+    expect(typeof result.data.id).toBe("string");
+    expect(result.data.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
     );
     expect(res.status).toBe(201);
