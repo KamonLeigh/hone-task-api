@@ -24,7 +24,7 @@
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",
     "@hono/swagger-ui": "^0.6.1",
-    "@hono/zod-openapi": "^0.16.4",
+    "@hono/zod-openapi": "^1.6.3",
     "@hono/zod-validator": "^0.4.3",
     "drizzle-orm": "^0.36.4",
     "drizzle-zod": "^0.5.1",

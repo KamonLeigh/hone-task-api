@@ -1,24 +1,20 @@
 import { db } from "@db/db";
 import { users, selectUsersSchema } from "@db/schema";
-import { generateHash, StatusCode, CustomError, successResponse,errorResponse } from "@util";
+import { generateHash, StatusCode, CustomError, successResponse,errorResponse, type AppEnv} from "@util";
 import { generateToken, revokeToken } from "@auth";
-import type { Context } from "hono";
+import type { RouteHandler } from "@hono/zod-openapi"
+import type { createUserRoute } from "./index"
 
+import type { Context } from "hono"
 
+type SignUpHandler = RouteHandler<typeof createUserRoute, AppEnv>
 
 import type { User } from "@db/schema";
 
 export type Token = Pick<User, "id" | "name">;
 
-interface CustomContext extends Context {
-  get(key: "user"): { id: string };
-  req: Context["req"] & {
-    valid<T>(target: "json"): { name: string; password: string };
-  };
-}
-
-export async function signUp(c: CustomContext) {
-  const { name, password } = c.req.valid("json");
+export async function signUp(c: Context<AppEnv>) {
+  const { name, password } = c.req.valid("json" as never)
 
   const user = await db.query.users.findFirst({
     where(fields, operators) {
@@ -52,8 +48,8 @@ export async function signUp(c: CustomContext) {
   })
 }
 
-export async function signIn(c: CustomContext) {
-  const { name, password } = c.req.valid("json");
+export async function signIn(c: Context<AppEnv>) {
+  const { name, password } = c.req.valid("json" as never);
 
   const user = await db.query.users.findFirst({
     where(fields, operators) {
@@ -89,7 +85,7 @@ export async function signIn(c: CustomContext) {
   })
 }
 
-export async function me(c: Context) {
+export async function me(c: Context<AppEnv>) {
   const userData = c.get("user");
 
   const user = await db.query.users.findFirst({
@@ -115,7 +111,7 @@ export async function me(c: Context) {
   })
 }
 
-export function logout(c: Context) {
+export function logout(c: Context<AppEnv>) {
   const authHeader = c.req.header("Authorization") as string;
   const token = authHeader.split(" ")[1];
 
@@ -124,10 +120,18 @@ export function logout(c: Context) {
   return c.body(null);
 }
 
-export function refreshTokenHandler(c: Context) {
+export function refreshTokenHandler(c: Context<AppEnv>) {
   const user = c.get("user");
 
-  const token = generateToken(user);
+  if (!user.name) {
+    return errorResponse(c, {
+      message: "User creation failed",
+      status: StatusCode.INTERNAL_SERVER_ERROR,
+    })
+  }
+
+  const token = generateToken({ id: user.id, name: user.name });
+
   return successResponse(c, {
     data: {
       token

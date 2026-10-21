@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { zValidator } from "@hono/zod-validator";
 import authenticate from "@middleware/auth";
 import { paramsId } from "../project";
@@ -11,7 +11,7 @@ import {
   deleteTaskHandler,
 } from "./handler";
 
-const taskRoutes = new Hono();
+const taskRoutes = new OpenAPIHono();
 
 const paramsTaskId = paramsId.extend({
   taskId: z.string(),

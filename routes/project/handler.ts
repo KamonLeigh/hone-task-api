@@ -1,20 +1,13 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@db/db";
 import { selectProjectsSchema, projects } from "@db/schema";
-import type { CreateProjectBody } from "@db/schema";
 import type { Context } from "hono";
-import { StatusCode, successResponse, errorResponse } from "@util";
+import { StatusCode, successResponse, errorResponse, type AppEnv } from "@util";
 
-interface CustomContext extends Context {
-  get(key: "user"): { id: string };
-  req: Context["req"] & {
-    valid<T = CreateProjectBody>(target: "json"): T;
-  };
-}
 
-export async function createProjectHandler(c: CustomContext) {
+export async function createProjectHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
-  const { name } = c.req.valid("json");
+  const { name } = c.req.valid("json" as never);
 
   const project = await db
     .insert(projects)
@@ -32,7 +25,7 @@ export async function createProjectHandler(c: CustomContext) {
   })
 }
 
-export async function projectHandler(c: Context) {
+export async function projectHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
 
@@ -54,7 +47,7 @@ export async function projectHandler(c: Context) {
     status: StatusCode.OK
   })
 }
-export async function projectListHandler(c: Context) {
+export async function projectListHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
 
   const projectList = await db
@@ -69,10 +62,10 @@ export async function projectListHandler(c: Context) {
   })
 }
 
-export async function updateProjectHandler(c: CustomContext) {
+export async function updateProjectHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
-  const { name } = c.req.valid("json");
+  const { name } = c.req.valid("json" as never);
 
     const result = await db
       .update(projects)
@@ -94,7 +87,7 @@ export async function updateProjectHandler(c: CustomContext) {
   })
 }
 
-export async function deleteProjectHandler(c: Context) {
+export async function deleteProjectHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
   const { id: slug } = c.req.param();
 
