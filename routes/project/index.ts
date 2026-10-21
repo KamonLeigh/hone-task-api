@@ -23,7 +23,7 @@ export const createProjectRoute = createRoute({
   security: [{ bearerAuth: [] }],
   request: {
     body: {
-      content: { "application/json": { schema: insertProjectsSchema}}
+      content: { "application/json": { schema: insertProjectsSchema.pick({name: true})}}
     }
   },
   responses: {
