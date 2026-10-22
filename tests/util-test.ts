@@ -35,6 +35,10 @@ export const generateTokenUser = async (body: {
   const res = await app.fetch(req);
   const data = await res.json();
 
+  if (!data.data) {
+     throw new Error(`Sign in failed for ${body.name}: ${data.message}`);
+  }
+
   return data.data;
 };
 

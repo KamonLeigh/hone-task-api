@@ -83,3 +83,9 @@ export function errorResponse(c: Context, {
 
   return c.json({ success: false, ...(message && { message }) }, status as Exclude<StatusCode, 204>)
 }
+
+export type AppEnv = {
+  Variables: {
+    user: { id: string, name?: string};
+  };
+};
