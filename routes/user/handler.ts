@@ -24,7 +24,7 @@ export async function signUp(c: Context<AppEnv>) {
 
   if (user) {
     return errorResponse(c, {
-      message: "name is already taken",
+      message: "Unable to create",
       status: StatusCode.CONFLICT
     })
   }

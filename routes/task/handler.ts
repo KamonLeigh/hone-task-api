@@ -1,18 +1,13 @@
 import { eq, and } from "drizzle-orm";
 import type { Context } from "hono";
 import { db } from "@db/db";
-import { successResponse, errorResponse, StatusCode } from "@util";
+import { successResponse, errorResponse, StatusCode, type AppEnv} from "@util";
 import { selectTasksSchema, tasks, projects } from "@db/schema";
 import type { CreateTaskBody } from "@db/schema";
 
 
-interface CustomContext extends Context {
-  get(key: "user"): { id: string };
-  req: Context["req"] & {
-    valid<T = CreateTaskBody>(target: "json"): T;
-  };
-}
-export async function taskListHandler(c: Context) {
+
+export async function taskListHandler(c: Context<AppEnv>) {
   const { id: projectId } = c.req.param();
   const { id: ownerId } = c.get("user");
 
@@ -35,10 +30,10 @@ export async function taskListHandler(c: Context) {
   })
 }
 
-export async function createTaskHandler(c: CustomContext) {
+export async function createTaskHandler(c: Context<AppEnv>) {
   const { id: projectId } = c.req.param();
   const { id: ownerId } = c.get("user");
-  const { name } = c.req.valid("json");
+  const { name } = c.req.valid("json" as never);
 
   const project = await db
     .select()
@@ -68,10 +63,10 @@ export async function createTaskHandler(c: CustomContext) {
   })
 }
 
-export async function updateTaskHandler(c: CustomContext) {
+export async function updateTaskHandler(c: Context<AppEnv>) {
   const { id: projectId, taskId: slug } = c.req.param();
   const { id: ownerId } = c.get("user");
-  const { name } = c.req.valid("json");
+  const { name } = c.req.valid("json" as never);
 
   const task = await db
       .update(tasks)
@@ -99,7 +94,7 @@ export async function updateTaskHandler(c: CustomContext) {
   })
 }
 
-export async function deleteTaskHandler(c: Context) {
+export async function deleteTaskHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
   const { taskId: slug } = c.req.param();
 

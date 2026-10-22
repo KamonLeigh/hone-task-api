@@ -177,7 +177,7 @@ export const deleteProjectRoute = createRoute({
 
 
 projectRoutes.use('/', authenticate);
-projectRoutes.use(':id', authenticate);
+projectRoutes.use('/:id', authenticate);
 
 projectRoutes
   .openapi(createProjectRoute, createProjectHandler as any)
