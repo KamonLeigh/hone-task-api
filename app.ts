@@ -29,7 +29,7 @@ app.use(
   })
 )
 app.get("/", (c) => {
-  return c.text(`Hello Hono  ${Bun.env.NODE_ENV}`);
+  return c.text(`Hello Hono ${Bun.env.NODE_ENV}`);
 });
 
 if (config.isDevelopment) {
