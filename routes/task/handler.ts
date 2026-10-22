@@ -3,9 +3,6 @@ import type { Context } from "hono";
 import { db } from "@db/db";
 import { successResponse, errorResponse, StatusCode, type AppEnv} from "@util";
 import { selectTasksSchema, tasks, projects } from "@db/schema";
-import type { CreateTaskBody } from "@db/schema";
-
-
 
 export async function taskListHandler(c: Context<AppEnv>) {
   const { id: projectId } = c.req.param();

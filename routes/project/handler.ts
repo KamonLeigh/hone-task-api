@@ -4,7 +4,6 @@ import { selectProjectsSchema, projects } from "@db/schema";
 import type { Context } from "hono";
 import { StatusCode, successResponse, errorResponse, type AppEnv } from "@util";
 
-
 export async function createProjectHandler(c: Context<AppEnv>) {
   const { id: ownerId } = c.get("user");
   const { name } = c.req.valid("json" as never);

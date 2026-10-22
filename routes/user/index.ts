@@ -157,6 +157,4 @@ userRoutes
   .openapi(deauthenticateUserRoute, logout as any)
   .openapi(refreshTokenUserRoutes, refreshTokenHandler as any)
 
-
-
 export default userRoutes;

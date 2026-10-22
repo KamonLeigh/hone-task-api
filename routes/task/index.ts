@@ -1,5 +1,4 @@
 import { OpenAPIHono, z, createRoute } from "@hono/zod-openapi";
-import { zValidator } from "@hono/zod-validator";
 import authenticate from "@middleware/auth";
 import { paramsId } from "../project";
 import { insertTasksSchema, selectTasksSchema } from "@db/schema";
