@@ -1,21 +1,14 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@db/db";
 import { selectCommentsSchema, comments, tasks } from "@db/schema";
-import { StatusCode, successResponse, errorResponse } from "@util";
+import { StatusCode, successResponse, errorResponse, type AppEnv } from "@util";
 import type { CreateCommentBody } from "@db/schema";
 import type { Context } from "hono";
 
-interface CustomContext extends Context {
-  get(key: "user"): { id: string };
-  req: Context["req"] & {
-    valid<T = CreateCommentBody>(target: "json"): T;
-  };
-}
-
-export async function createCommentHandler(c: CustomContext) {
+export async function createCommentHandler(c: Context<AppEnv>) {
   const { taskId } = c.req.param();
   const { id: authorId } = c.get("user");
-  const { comment } = c.req.valid("json");
+  const { comment } = c.req.valid("json" as never);
 
   const task = await db.select().from(tasks).where(eq(tasks.slug, taskId));
 
@@ -41,7 +34,7 @@ export async function createCommentHandler(c: CustomContext) {
     })
 }
 
-export async function getCommentHandler(c: Context) {
+export async function getCommentHandler(c: Context<AppEnv>) {
   const { taskId } = c.req.param();
   const commentList = await db
     .select()
@@ -55,10 +48,10 @@ export async function getCommentHandler(c: Context) {
   })
 }
 
-export async function updateCommentHandler(c: CustomContext) {
+export async function updateCommentHandler(c: Context<AppEnv>) {
   const { id: slug } = c.req.param();
   const { id: authorId } = c.get("user");
-  const { comment } = c.req.valid("json");
+  const { comment } = c.req.valid("json" as never);
 
   const result = await db
     .update(comments)
@@ -78,7 +71,7 @@ export async function updateCommentHandler(c: CustomContext) {
   })
 }
 
-export async function deleteCommentHandler(c: Context) {
+export async function deleteCommentHandler(c: Context<AppEnv>) {
   const { id: slug } = c.req.param();
   const { id: authorId } = c.get("user");
 

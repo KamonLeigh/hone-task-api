@@ -20,7 +20,7 @@ const paramsTaskId = paramsId.extend({
 
 export const getTasksRoute = createRoute({
   method: "get",
-  path: "/{id}",
+  path: "/:id",
   tags: ['Tasks'],
   security: [{ bearerAuth: [] }],
   request: { params: paramsId },
@@ -54,7 +54,7 @@ export const getTasksRoute = createRoute({
 
 export const insertTaskRoute = createRoute({
   method: "post",
-  path: "/{id}",
+  path: "/:id",
   security: [{ bearerAuth: [] }],
   request: {
     params: paramsId,
@@ -99,7 +99,7 @@ export const insertTaskRoute = createRoute({
 
 export const updateTaskRoute = createRoute({
   method: "patch",
-  path: "/{id}/{taskId}",
+  path: "/:id/:taskId",
   security: [{ bearerAuth: [] }],
   request: {
     params: paramsTaskId,
@@ -143,7 +143,7 @@ export const updateTaskRoute = createRoute({
 
 export const deleteTaskRoute = createRoute({
   method: "delete",
-  path: "/{id}/{taskId}",
+  path: "/:id/:taskId",
   security: [{ bearerAuth: [] }],
   request: {
     params: paramsTaskId,

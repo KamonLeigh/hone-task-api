@@ -46,7 +46,7 @@ export const createProjectRoute = createRoute({
 
 export const getSingleProjectRoute = createRoute({
   method: "get",
-  path: "/{id}",
+  path: "/:id",
   tags: ['Project'],
   security: [{ bearerAuth: [] }],
   request: { params: paramsId },
@@ -79,7 +79,7 @@ export const getSingleProjectRoute = createRoute({
 
 export const updateProjectRoute = createRoute({
   method: "patch",
-  path: "/{id}",
+  path: "/:id",
   tags: ['Project'],
   security: [{ bearerAuth: [] }],
   request: {
@@ -140,7 +140,7 @@ export const getProjectsRoute = createRoute({
 
 export const deleteProjectRoute = createRoute({
   method: "delete",
-  path: "/{id}",
+  path: "/:id",
   tags: ['Project'],
   security: [{ bearerAuth: [] }],
   request: {
